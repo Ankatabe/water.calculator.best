@@ -1,286 +1,202 @@
 <!DOCTYPE html>
 <html lang="ka">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>წყლის კალკულატორი + ტალღები</title>
-    <!-- Tailwind CSS CDN for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom styles for the Inter font and to ensure canvas occupies half the screen height initially */
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            overflow: hidden; /* Prevent scrollbars due to canvas positioning */
-            transition: background-color 1s ease-in-out; /* Smooth transition for background */
-        }
-        canvas {
-            display: block;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50vh; /* Canvas takes up half the viewport height initially */
-            z-index: 1;
-            transition: height 1s ease-in-out, top 1s ease-in-out; /* Smooth transition for canvas height */
-        }
-        .full-screen-water {
-            height: 100vh !important;
-            top: 0 !important;
-        }
-        .full-screen-body-bg {
-            background-color: #007bff !important; /* Solid blue for full screen water */
-            background-image: none !important;
-        }
-
-        /* Custom style to override calculator's absolute positioning for responsiveness */
-        .calculator-container {
-            position: relative; /* Ensure it's positioned relative to its parent for flexbox to work */
-            z-index: 20; /* Keep calculator above waves */
-            display: flex; /* Use flexbox for centering */
-            align-items: center; /* Center vertically */
-            justify-content: center; /* Center horizontally */
-            min-height: 100vh; /* Take full viewport height to allow vertical centering */
-            padding: 20px; /* Add some padding for smaller screens */
-        }
-    </style>
-    <script>
-        // Configure Tailwind CSS to use 'Inter' as the default font
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        inter: ['Inter', 'sans-serif'],
-                    },
-                },
-            },
-        };
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>წყლის კალკულატორი + ტალღები</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      overflow: hidden;
+      background-color: white;
+      color: black;
+      transform: scale(0.75);
+      transform-origin: top center;
+    }
+    canvas {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+      transition: height 1s ease-in-out, top 1s ease-in-out;
+    }
+    .calculator-container {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    #results p {
+      font-weight: normal;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white min-h-screen relative">
+<body class="min-h-screen relative bg-white text-black">
 
-    <!-- Calculator container -->
-    <div class="calculator-container">
-        <div class="calculator bg-gray-800/50 border border-white/30 p-6 rounded-xl shadow-2xl w-11/12 sm:w-96 md:w-1/2 lg:w-96 xl:w-1/3 max-w-lg text-center backdrop-blur-sm">
-            <h2 class="text-2xl font-bold mb-4 text-blue-300">წყლის კალკულატორი</h2>
+  <div class="calculator-container">
+    <div class="calculator bg-[#4f8292] border border-white/30 p-6 rounded-xl shadow-2xl w-11/12 sm:w-96 md:w-1/2 lg:w-96 xl:w-1/3 max-w-lg text-center backdrop-blur-sm">
+      <h2 class="mb-4 text-white font-bold" style="font-size: 1.4rem;">
+        წყლის კალკულატორი
+      </h2>
 
-            <!-- Gender selection dropdown -->
-            <select id="gender" class="w-full p-2 my-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200">
-                <option value="male">კაცი</option>
-                <option value="female">ქალი</option>
-            </select>
+      <select id="gender" class="w-full p-2 my-2 rounded-md bg-[#3d5a63] text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200">
+        <option value="male">კაცი</option>
+        <option value="female">ქალი</option>
+      </select>
 
-            <!-- Input fields for height, weight, cup volume, and cups drunk -->
-            <input type="number" id="height" placeholder="სიმაღლე (სმ)" class="w-full p-2 my-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200" />
-            <input type="number" id="weight" placeholder="წონა (კგ)" class="w-full p-2 my-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200" />
-            <input type="number" id="cupVolume" placeholder="ჭიქის მოცულობა (მლ)" class="w-full p-2 my-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200" />
-            <input type="number" id="cupsDrunk" placeholder="დალეული ჭიქების რაოდენობა" class="w-full p-2 my-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200" />
+      <input type="number" id="height" placeholder="სიმაღლე (სმ)" class="w-full p-2 my-2 rounded-md bg-[#3d5a63] text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200" />
+      <input type="number" id="weight" placeholder="წონა (კგ)" class="w-full p-2 my-2 rounded-md bg-[#3d5a63] text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200" />
+      <input type="number" id="cupVolume" placeholder="ჭიქის მოცულობა (მლ)" class="w-full p-2 my-2 rounded-md bg-[#3d5a63] text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200" />
+      <input type="number" id="cupsDrunk" placeholder="დალეული ჭიქების რაოდენობა" class="w-full p-2 my-2 rounded-md bg-[#3d5a63] text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200" />
 
-            <!-- Calculate button -->
-            <button onclick="calculateWater()" class="mt-4 w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md shadow-lg transition-colors duration-300 transform hover:scale-105">
-                გამოთვლა
-            </button>
+      <button onclick="calculateWater()" style="background-color: #67a5a5;" class="mt-4 w-full py-2 px-4 text-white font-bold rounded-md shadow-lg transition-colors duration-300 transform hover:scale-105 hover:opacity-90">
+        გამოთვლა
+      </button>
 
-            <!-- Results display area -->
-            <div id="results" class="result-box mt-6 pt-4 border-t border-white/30 text-sm leading-relaxed text-blue-100">
-                <!-- Results will be displayed here -->
-            </div>
+      <div id="results" class="result-box mt-6 pt-4 border-t border-white/30 text-white">
+      </div>
 
-            <!-- Error message box -->
-            <div id="error-message" class="hidden mt-4 p-3 bg-red-600 text-white rounded-md text-sm">
-                <!-- Error messages will be displayed here -->
-            </div>
-        </div>
+      <div id="error-message" class="hidden mt-4 p-3 bg-red-600 text-white rounded-md text-sm"></div>
     </div>
+  </div>
 
-    <!-- Canvas for wave animation -->
-    <canvas id="waveCanvas"></canvas>
+  <canvas id="waveCanvas"></canvas>
 
-    <script>
-        const canvas = document.getElementById('waveCanvas');
-        const ctx = canvas.getContext('2d');
-        const body = document.body;
+  <script>
+    const canvas = document.getElementById('waveCanvas');
+    const ctx = canvas.getContext('2d');
+    const body = document.body;
 
-        let waterFillPercentage = 0; // Global variable to store the water level percentage (0-100)
-        let time = 0; // Time variable for wave animation progression
-        const bottomOffset = 50; // 50 pixels offset from the bottom
+    let waterFillPercentage = 0;
+    let time = 0;
 
-        // Function to resize the canvas dynamically based on window size
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            // If waterFillPercentage is 100% or more, canvas takes full viewport height
-            // Otherwise, it takes half the viewport height
-            canvas.height = (waterFillPercentage >= 100) ? window.innerHeight : window.innerHeight / 2;
-            canvas.style.top = (waterFillPercentage >= 100) ? '0px' : 'auto';
-        }
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-        // Event listener for window resize to adjust canvas size
-        window.addEventListener('resize', resizeCanvas);
-        // Initial canvas resize on load
-        resizeCanvas();
+    function drawWave(amplitude, frequency, speed, phaseShift, color, baseLevelY) {
+      ctx.beginPath();
+      ctx.moveTo(0, baseLevelY + amplitude * Math.sin(0 * frequency + time * speed + phaseShift));
+      for (let x = 0; x <= canvas.width; x++) {
+        const y = amplitude * Math.sin((x * frequency) + time * speed + phaseShift) + baseLevelY;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
 
-        /**
-         * Draws a single wave on the canvas.
-         * @param {number} amplitude - The height of the wave.
-         * @param {number} frequency - How many waves are visible across the screen.
-         * @param {number} speed - How fast the wave moves.
-         * @param {number} phaseShift - Horizontal offset of the wave.
-         * @param {string} color - Fill color of the wave.
-         * @param {number} baseLevelY - The base Y-coordinate for the wave's oscillation.
-         */
-        function drawWave(amplitude, frequency, speed, phaseShift, color, baseLevelY) {
-            ctx.beginPath();
-            // Start drawing from the calculated base level, considering the wave's shape at x=0
-            ctx.moveTo(0, baseLevelY + amplitude * Math.sin(0 * frequency + time * speed + phaseShift));
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            for (let x = 0; x <= canvas.width; x++) {
-                const y = amplitude * Math.sin((x * frequency) + time * speed + phaseShift) + baseLevelY;
-                ctx.lineTo(x, y);
-            }
+      const bottomOffset = 50; // 50 px from bottom
 
-            // Fill from the wave line down to the bottom of the canvas
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.lineTo(0, canvas.height);
-            ctx.closePath();
-            ctx.fillStyle = color;
-            ctx.fill();
-        }
+      // დალეული პროცენტის მიხედვით გამოითვლება ტალღის Y ბაზა
+      const baseWaveY = canvas.height - bottomOffset - ((canvas.height - bottomOffset) * (waterFillPercentage / 100));
 
-        // Animation loop for the waves
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire canvas for each frame
+      drawWave(15, 0.015, 0.03, 0, '#5f93a4', baseWaveY);
+      drawWave(12, 0.02, -0.025, Math.PI / 2, '#3f7384', baseWaveY + 10);
+      drawWave(10, 0.025, 0.02, Math.PI, '#71b0c4', baseWaveY + 20);
+      drawWave(8, 0.03, -0.015, Math.PI * 1.5, '#3987a0', baseWaveY + 30);
 
-            // Calculate the base Y position for the waves based on fill percentage
-            // When 0% fill, waves start at canvas.height - bottomOffset
-            // When 100% fill, waves start at 0
-            let baseWaveY;
-            if (waterFillPercentage >= 100) {
-                baseWaveY = 0; // Full screen, so waves start from the very top
-            } else {
-                // Interpolate between (canvas.height - bottomOffset) and 0
-                const availableHeight = canvas.height - bottomOffset;
-                baseWaveY = availableHeight - (availableHeight * (waterFillPercentage / 100));
-            }
+      time += 0.5;
+      requestAnimationFrame(animate);
+    }
 
-            // Adjust canvas height and body background if waterFillPercentage is 100% or more
-            if (waterFillPercentage >= 100) {
-                canvas.classList.add('full-screen-water');
-                body.classList.add('full-screen-body-bg');
-            } else {
-                canvas.classList.remove('full-screen-water');
-                body.classList.remove('full-screen-body-bg');
-            }
+    window.onload = () => {
+      animate();
+    };
 
-            // Draw multiple waves with different properties for a layered effect
-            // The vertical offset for each wave layer is relative to baseWaveY
-            drawWave(15, 0.015, 0.03, 0, 'rgba(0, 181, 234, 0.6)', baseWaveY);
-            drawWave(12, 0.02, -0.025, Math.PI / 2, 'rgba(0, 160, 210, 0.7)', baseWaveY + 10);
-            drawWave(10, 0.025, 0.02, Math.PI, 'rgba(0, 140, 190, 0.8)', baseWaveY + 20);
-            drawWave(8, 0.03, -0.015, Math.PI * 1.5, 'rgba(0, 120, 170, 0.9)', baseWaveY + 30);
+    function showMessage(message, isError = true) {
+      const errorMessageDiv = document.getElementById('error-message');
+      errorMessageDiv.textContent = message;
+      errorMessageDiv.classList.remove('hidden', 'bg-red-600', 'bg-green-600');
+      errorMessageDiv.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
+      setTimeout(() => {
+        errorMessageDiv.classList.add('hidden');
+      }, 5000);
+    }
 
-            time += 0.5; // Increment time to animate the waves
-            requestAnimationFrame(animate); // Request the next animation frame
-        }
+    function calculateWater() {
+      const gender = document.getElementById('gender').value;
+      const height = parseFloat(document.getElementById('height').value);
+      const weight = parseFloat(document.getElementById('weight').value);
+      const cupVolume = parseFloat(document.getElementById('cupVolume').value);
+      const cupsDrunk = parseFloat(document.getElementById('cupsDrunk').value);
+      const resultsDiv = document.getElementById('results');
 
-        // Start the wave animation when the window loads
-        window.onload = function() {
-            animate();
-        };
+      if (isNaN(height) || height <= 0) {
+        showMessage('გთხოვთ, შეიყვანოთ სწორი დადებითი სიმაღლე.');
+        resultsDiv.innerHTML = '';
+        return;
+      }
+      if (isNaN(weight) || weight <= 0) {
+        showMessage('გთხოვთ, შეიყვანოთ სწორი დადებითი წონა.');
+        resultsDiv.innerHTML = '';
+        return;
+      }
+      if (isNaN(cupVolume) || cupVolume <= 0) {
+        showMessage('გთხოვთ, შეიყვანოთ სწორი დადებითი ჭიქის მოცულობა.');
+        resultsDiv.innerHTML = '';
+        return;
+      }
+      if (isNaN(cupsDrunk) || cupsDrunk < 0) {
+        showMessage('გთხოვთ, შეიყვანოთ დალეული ჭიქების სწორი, არაუარყოფითი რაოდენობა.');
+        resultsDiv.innerHTML = '';
+        return;
+      }
 
+      let requiredMl;
+      if (gender === 'male') {
+        requiredMl = (weight * 35) + (height * 4);
+      } else {
+        requiredMl = (weight * 31) + (height * 3.5);
+      }
 
-        /**
-         * Displays a message in the dedicated error message box.
-         * @param {string} message - The message to display.
-         * @param {boolean} isError - True if it's an error, false for general info.
-         */
-        function showMessage(message, isError = true) {
-            const errorMessageDiv = document.getElementById('error-message');
-            errorMessageDiv.textContent = message;
-            errorMessageDiv.classList.remove('hidden', 'bg-red-600', 'bg-green-600');
-            errorMessageDiv.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
-            // Hide the message after 5 seconds
-            setTimeout(() => {
-                errorMessageDiv.classList.add('hidden');
-            }, 5000);
-        }
+      let drunkMl = cupsDrunk * cupVolume;
+      let remainingMl = requiredMl - drunkMl;
 
-        /**
-         * Calculates the recommended water intake and displays the results.
-         * Based on gender, height, weight, cup volume, and cups drunk.
-         */
-        function calculateWater() {
-            // Get values from input fields
-            const gender = document.getElementById('gender').value;
-            const height = parseFloat(document.getElementById('height').value);
-            const weight = parseFloat(document.getElementById('weight').value);
-            const cupVolume = parseFloat(document.getElementById('cupVolume').value);
-            const cupsDrunk = parseFloat(document.getElementById('cupsDrunk').value);
-            const resultsDiv = document.getElementById('results');
+      if (requiredMl > 0) {
+        waterFillPercentage = (drunkMl / requiredMl) * 100;
+      } else {
+        waterFillPercentage = 0;
+      }
 
-            // Input validation
-            if (isNaN(height) || height <= 0) {
-                showMessage('გთხოვთ, შეიყვანოთ სწორი დადებითი სიმაღლე.');
-                resultsDiv.innerHTML = ''; // Clear previous results
-                return;
-            }
-            if (isNaN(weight) || weight <= 0) {
-                showMessage('გთხოვთ, შეიყვანოთ სწორი დადებითი წონა.');
-                resultsDiv.innerHTML = '';
-                return;
-            }
-            if (isNaN(cupVolume) || cupVolume <= 0) {
-                showMessage('გთხოვთ, შეიყვანოთ სწორი დადებითი ჭიქის მოცულობა.');
-                resultsDiv.innerHTML = '';
-                return;
-            }
-            if (isNaN(cupsDrunk) || cupsDrunk < 0) {
-                showMessage('გთხოვთ, შეიყვანოთ დალეული ჭიქების სწორი, არაუარყოფითი რაოდენობა.');
-                resultsDiv.innerHTML = '';
-                return;
-            }
+      let remainingColorClass = '';
+      let remainingText = '';
 
-            // Calculate required water intake based on gender
-            let requiredMl;
-            if (gender === 'male') {
-                requiredMl = (weight * 35) + (height * 4);
-            } else { // female
-                requiredMl = (weight * 31) + (height * 3.5);
-            }
+      if (remainingMl > 0) {
+        remainingColorClass = 'text-red-400';
+        remainingText = `<strong>დარჩენილი:</strong> ${Math.round(remainingMl)} მლ / ${Math.round(remainingMl / cupVolume)} ჭიქა`;
+      } else {
+        remainingColorClass = 'text-green-400';
+        remainingText = `<strong>ზედმეტი:</strong> ${Math.abs(Math.round(remainingMl))} მლ / ${Math.abs(Math.round(remainingMl / cupVolume))} ჭიქა`;
+      }
 
-            // Calculate water already drunk
-            let drunkMl = cupsDrunk * cupVolume;
-            // Calculate remaining or excess water
-            let remainingMl = requiredMl - drunkMl;
+      let resultText = `
+        <p><strong>საჭირო რაოდენობა:</strong> ${Math.round(requiredMl)} მლ / ${Math.round(requiredMl / cupVolume)} ჭიქა</p>
+        <p><strong>დალეული:</strong> ${Math.round(drunkMl)} მლ / ${Math.round(drunkMl / cupVolume)} ჭიქა</p>
+        <p class="${remainingColorClass}">${remainingText}</p>
+      `;
 
-            // Calculate percentage drunk for wave animation
-            if (requiredMl > 0) {
-                waterFillPercentage = (drunkMl / requiredMl) * 100;
-            } else {
-                waterFillPercentage = 0; // Default to 0 if requiredMl is 0 (e.g., invalid input)
-            }
-
-            // Determine the color class based on remainingMl
-            let remainingColorClass = '';
-            let remainingText = '';
-
-            if (remainingMl > 0) {
-                remainingColorClass = 'text-red-400'; // Red for remaining
-                remainingText = `<strong>დარჩენილი:</strong> ${Math.round(remainingMl)} მლ / ${Math.round(remainingMl / cupVolume)} ჭიქა`;
-            } else {
-                remainingColorClass = 'text-green-400'; // Green for excess or met goal
-                remainingText = `<strong>ზედმეტი:</strong> ${Math.abs(Math.round(remainingMl))} მლ / ${Math.abs(Math.round(remainingMl / cupVolume))} ჭიქა`;
-            }
-
-            // Prepare the result text
-            let resultText = `
-                <p><strong>საჭირო რაოდენობა:</strong> ${Math.round(requiredMl)} მლ / ${Math.round(requiredMl / cupVolume)} ჭიქა</p>
-                <p><strong>დალეული:</strong> ${Math.round(drunkMl)} მლ / ${Math.round(drunkMl / cupVolume)} ჭიქა</p>
-                <p class="${remainingColorClass}">${remainingText}</p>
-            `;
-
-            // Display the results
-            resultsDiv.innerHTML = resultText;
-        }
-    </script>
+      resultsDiv.innerHTML = resultText;
+    }
+  </script>
 </body>
 </html>
